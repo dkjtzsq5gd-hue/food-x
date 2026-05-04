@@ -664,25 +664,25 @@
 </div>
 
 <script>
+(function(){
+  var P = 'vyhpem-0daFri-soqvaq';
+  if(localStorage.getItem('foodx_auth') !== P){
+    var s = prompt('FOOD-X — Accès privé\n\nMot de passe :');
+    if(s !== P){
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0A0A0A;color:#555;font-family:sans-serif;font-size:13px;letter-spacing:2px;">ACCÈS REFUSÉ</div>';
+      throw new Error('Unauthorized');
+    }
+    localStorage.setItem('foodx_auth', P);
+  }
+})();
+</script>
+<script>
 // ===== SUPABASE CONFIG =====
 // Remplacez ces deux valeurs par les vôtres (voir guide d'installation)
 const SUPABASE_URL = 'https://jqisryvrpszsbkfbdpgx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_ODRonceMmY12ZQK1hdBAIQ_uYdvDdJw';
 
 // ===== STATE & STORAGE =====
-<script>
-(function(){
-  var MOT_DE_PASSE = 'vyhpem-0daFri-soqvaq';
-  if(localStorage.getItem('foodx_auth') !== MOT_DE_PASSE){
-    var saisi = prompt('FOOD-X — Accès privé\n\nMot de passe :');
-    if(saisi !== MOT_DE_PASSE){
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0A0A0A;color:#555;font-family:sans-serif;font-size:13px;letter-spacing:2px;">ACCÈS REFUSÉ</div>';
-      throw new Error('Unauthorized');
-    }
-    localStorage.setItem('foodx_auth', MOT_DE_PASSE);
-  }
-})();
-</script>
 const STORE_KEY = 'foodx_v2_recipes';
 let state = {
   recipes: JSON.parse(localStorage.getItem(STORE_KEY) || '[]'),
@@ -696,8 +696,8 @@ let tempIngredients = [];
 
 // ===== SYNC WITH SUPABASE =====
 const supabaseConfigured = () =>
-  SUPABASE_URL !== 'https://jqisryvrpszsbkfbdpgx.supabase.co' &&
-  SUPABASE_KEY !== 'sb_publishable_ODRonceMmY12ZQK1hdBAIQ_uYdvDdJw' &&
+  SUPABASE_URL !== 'VOTRE_SUPABASE_URL' &&
+  SUPABASE_KEY !== 'VOTRE_SUPABASE_ANON_KEY' &&
   SUPABASE_URL.includes('supabase.co');
 
 function getSupabaseHeaders() {
