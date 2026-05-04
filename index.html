@@ -695,23 +695,37 @@ let state = {
 let tempIngredients = [];
 
 // ===== SYNC WITH SUPABASE =====
-const supabaseConfigured = () => SUPABASE_URL !== 'https://jqisryvrpszsbkfbdpgx.supabase.co' && SUPABASE_KEY !== 'sb_publishable_ODRonceMmY12ZQK1hdBAIQ_uYdvDdJw';
+const supabaseConfigured = () =>
+  SUPABASE_URL !== 'https://jqisryvrpszsbkfbdpgx.supabase.co' &&
+  SUPABASE_KEY !== 'sb_publishable_ODRonceMmY12ZQK1hdBAIQ_uYdvDdJw' &&
+  SUPABASE_URL.includes('supabase.co');
+
+function getSupabaseHeaders() {
+  // Supports both legacy (eyJ...) and new (sb_publishable_...) key formats
+  return {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json'
+  };
+}
 
 async function syncToCloud(recipesData) {
   if (!supabaseConfigured()) return;
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/foodx_data`, {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/foodx_data', {
       method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'resolution=merge-duplicates'
-      },
+      headers: Object.assign(getSupabaseHeaders(), { 'Prefer': 'resolution=merge-duplicates' }),
       body: JSON.stringify({ id: 1, recipes: recipesData, updated_at: new Date().toISOString() })
     });
-    showSyncStatus('✓ Sauvegardé en ligne', 'ok');
+    if (res.ok) {
+      showSyncStatus('✓ Sauvegardé en ligne', 'ok');
+    } else {
+      const err = await res.json().catch(() => ({}));
+      console.warn('Supabase sync error:', res.status, err);
+      showSyncStatus('⚠ Sauvegarde locale uniquement', 'warn');
+    }
   } catch(e) {
+    console.warn('Supabase sync failed:', e);
     showSyncStatus('⚠ Sauvegarde locale uniquement', 'warn');
   }
 }
@@ -720,15 +734,23 @@ async function loadFromCloud() {
   if (!supabaseConfigured()) return null;
   try {
     showSyncStatus('↻ Synchronisation...', 'syncing');
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/foodx_data?id=eq.1&select=recipes,updated_at`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    const res = await fetch(SUPABASE_URL + '/rest/v1/foodx_data?id=eq.1&select=recipes,updated_at', {
+      headers: getSupabaseHeaders()
     });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      console.warn('Supabase load error:', res.status, err);
+      showSyncStatus('⚠ Connexion impossible', 'warn');
+      return null;
+    }
     const data = await res.json();
     if (data && data.length > 0 && data[0].recipes) {
       showSyncStatus('✓ Données synchronisées', 'ok');
       return data[0].recipes;
     }
+    showSyncStatus('', 'ok');
   } catch(e) {
+    console.warn('Supabase load failed:', e);
     showSyncStatus('⚠ Connexion impossible', 'warn');
   }
   return null;
@@ -744,12 +766,19 @@ function showSyncStatus(msg, type) {
 }
 
 async function initData() {
-  const cloud = await loadFromCloud();
-  if (cloud && cloud.length > 0) {
-    state.recipes = cloud;
-    localStorage.setItem(STORE_KEY, JSON.stringify(cloud));
-  }
+  // Always update UI from localStorage first so nav is never blocked
   updateHomeStats();
+  // Then try to sync from cloud in background
+  try {
+    const cloud = await loadFromCloud();
+    if (cloud && cloud.length > 0) {
+      state.recipes = cloud;
+      localStorage.setItem(STORE_KEY, JSON.stringify(cloud));
+      updateHomeStats();
+    }
+  } catch(e) {
+    console.warn('initData cloud sync failed silently:', e);
+  }
 }
 
 function save() {
