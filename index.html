@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOOD-X — Private Chef by XIB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8D5A0;
+    --silver: #B8BCC8;
+    --black: #0A0A0A;
+    --dark: #111111;
+    --dark2: #1A1A1A;
+    --dark3: #222222;
+    --dark4: #2A2A2A;
+    --text: #E8E4DC;
+    --text-muted: #888888;
+    --red-fr: #C1121F;
+    --blue-fr: #003F8A;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+  }
+
+  .app { display: flex; flex-direction: column; height: 100vh; }
+
+  /* NAV */
+  .nav {
+    display: flex; align-items: center;
+    padding: 0 28px;
+    background: var(--dark);
+    border-bottom: 1px solid #222;
+    height: 60px;
+    flex-shrink: 0;
+    gap: 0;
+    z-index: 10;
+  }
+  .logo-zone {
+    display: flex; align-items: center; gap: 14px;
+    margin-right: 36px; padding-right: 36px;
+    border-right: 1px solid #2A2A2A;
+  }
+  .logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 600;
+    letter-spacing: 4px;
+    background: linear-gradient(180deg, #D8D8D8 0%, #888 50%, #D8D8D8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .logo-sub { font-size: 8px; letter-spacing: 4px; color: var(--text-muted); text-transform: uppercase; font-weight: 300; margin-top: 2px; }
+  .tricolor { width: 20px; height: 3px; background: linear-gradient(90deg, var(--blue-fr) 33%, white 33% 66%, var(--red-fr) 66%); border-radius: 1px; }
+
+  .nav-tabs { display: flex; gap: 0; align-items: center; }
+  .nav-tab {
+    padding: 0 22px; height: 60px; display: flex; align-items: center;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase; font-weight: 400;
+    color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s; white-space: nowrap; user-select: none;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* MAIN */
+  .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .page { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+  .page.active { display: flex; }
+
+  /* ===== HOME ===== */
+  .home-content {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at center, #1A1400 0%, var(--black) 65%);
+    position: relative; overflow: hidden;
+  }
+  .home-bg-line {
+    position: absolute; width: 700px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.12), transparent);
+    pointer-events: none;
+  }
+  .home-logo-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 300;
+    letter-spacing: 14px;
+    background: linear-gradient(180deg, #E0E0E0 0%, #888 40%, #C0C0C0 70%, #666 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center; margin-bottom: 10px;
+  }
+  .home-divider {
+    display: flex; align-items: center; gap: 14px; margin: 14px auto; width: 340px;
+  }
+  .home-divider-line { flex: 1; height: 1px; background: #2A2A2A; }
+  .home-tricolor { width: 36px; height: 2px; background: linear-gradient(90deg, var(--blue-fr) 33%, white 33% 66%, var(--red-fr) 66%); }
+  .home-chef { font-size: 9px; letter-spacing: 6px; color: var(--text-muted); text-transform: uppercase; font-weight: 300; text-align: center; }
+  .home-tagline {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 22px; font-weight: 300; color: var(--gold-light); margin-top: 22px;
+    letter-spacing: 2px; text-align: center;
+  }
+  .home-stats { display: flex; gap: 56px; margin-top: 56px; }
+  .home-stat { text-align: center; }
+  .home-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 40px; color: var(--gold); font-weight: 300; line-height: 1; }
+  .home-stat-label { font-size: 9px; letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase; margin-top: 6px; }
+
+  /* ===== RECETTES ===== */
+  .recettes-layout { display: flex; flex: 1; overflow: hidden; }
+  .recettes-sidebar {
+    width: 210px; flex-shrink: 0;
+    background: var(--dark);
+    border-right: 1px solid #222;
+    display: flex; flex-direction: column;
+    padding: 20px 0;
+  }
+  .sidebar-section-title {
+    font-size: 8px; letter-spacing: 3px; color: #3A3A3A; text-transform: uppercase;
+    padding: 0 20px 10px; font-weight: 400;
+  }
+  .sidebar-cat {
+    padding: 11px 20px; font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+    border-left: 2px solid transparent; font-weight: 400; user-select: none;
+  }
+  .sidebar-cat:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+  .sidebar-cat.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.04); }
+
+  .recettes-main { flex: 1; overflow-y: auto; padding: 28px; }
+  .recettes-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300;
+    color: var(--text); letter-spacing: 2px;
+  }
+  .section-title span { color: var(--gold); }
+
+  /* BUTTONS */
+  .btn {
+    padding: 8px 18px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif; font-weight: 400; cursor: pointer;
+    border: 1px solid; border-radius: 1px; transition: all 0.2s; outline: none;
+    user-select: none;
+  }
+  .btn-gold { background: transparent; border-color: var(--gold); color: var(--gold); }
+  .btn-gold:hover { background: var(--gold); color: var(--black); }
+  .btn-sm { padding: 6px 12px; font-size: 9px; }
+  .btn-danger { border-color: #C1121F; color: #C1121F; background: transparent; }
+  .btn-danger:hover { background: #C1121F; color: white; }
+  .btn-silver { border-color: var(--silver); color: var(--silver); background: transparent; }
+  .btn-silver:hover { background: var(--silver); color: var(--black); }
+
+  /* RECIPE CARDS */
+  .recipe-grid { display: flex; flex-direction: column; gap: 10px; }
+  .recipe-card {
+    background: var(--dark2); border: 1px solid #222; border-radius: 1px;
+    overflow: hidden; transition: border-color 0.2s;
+  }
+  .recipe-card:hover { border-color: #303030; }
+  .recipe-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; cursor: pointer; user-select: none;
+  }
+  .recipe-card-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400;
+    color: var(--text); letter-spacing: 1px;
+  }
+  .recipe-card-meta {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 10px; color: var(--text-muted); letter-spacing: 1px;
+  }
+  .recipe-badge {
+    padding: 2px 8px; border: 1px solid rgba(201,168,76,0.25); border-radius: 1px;
+    font-size: 9px; letter-spacing: 1px; color: var(--gold);
+  }
+  .recipe-price { color: var(--gold); font-weight: 500; font-size: 14px; }
+  .recipe-chevron { color: var(--text-muted); transition: transform 0.25s; font-size: 9px; }
+  .recipe-card.open .recipe-chevron { transform: rotate(180deg); }
+  .recipe-body { display: none; border-top: 1px solid #222; }
+  .recipe-card.open .recipe-body { display: block; }
+  .recipe-body-inner { padding: 18px; }
+
+  /* CONVIVES */
+  .convives-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; background: var(--dark3); border-radius: 1px;
+    margin-bottom: 16px;
+  }
+  .convives-label { font-size: 9px; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; }
+  .convives-ctrl { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .convives-btn {
+    width: 26px; height: 26px; border: 1px solid #333; background: transparent;
+    color: var(--gold); font-size: 16px; cursor: pointer; border-radius: 1px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Montserrat', sans-serif; transition: all 0.15s; outline: none;
+  }
+  .convives-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.1); }
+  .convives-num { font-size: 18px; font-weight: 400; color: var(--text); min-width: 30px; text-align: center; font-family: 'Cormorant Garamond', serif; }
+  .convives-unit { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+
+  /* INGREDIENTS TABLE */
+  .ingr-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+  .ingr-table th {
+    font-size: 8px; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase;
+    padding: 6px 10px; border-bottom: 1px solid #222; text-align: left; font-weight: 400;
+  }
+  .ingr-table td { padding: 8px 10px; border-bottom: 1px solid #1C1C1C; font-size: 12px; vertical-align: middle; }
+  .ingr-table tr:last-child td { border-bottom: none; }
+  .ingr-table tr:hover td { background: rgba(255,255,255,0.015); }
+  .ingr-qty { color: var(--gold); font-weight: 500; }
+  .ingr-price-col { color: var(--text-muted); }
+  .ingr-total { color: var(--gold); text-align: right; font-weight: 500; }
+
+  .recipe-total-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 11px 16px; background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.18); border-radius: 1px; margin-top: 8px;
+  }
+  .recipe-total-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+  .recipe-total-price { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--gold); }
+  .recipe-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+  /* SELECT CHECK */
+  .select-check {
+    width: 15px; height: 15px; border: 1px solid #444; border-radius: 1px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.15s;
+  }
+  .select-check.checked { border-color: var(--gold); background: var(--gold); }
+  .select-check.checked::after { content: '✓'; font-size: 9px; color: var(--black); font-weight: 700; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88);
+    z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--dark); border: 1px solid #2A2A2A; border-radius: 1px;
+    width: 580px; max-width: 96vw; max-height: 88vh; overflow-y: auto;
+    padding: 32px;
+  }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300;
+    color: var(--text); margin-bottom: 6px; letter-spacing: 1px;
+  }
+  .modal-sub { font-size: 9px; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 22px; }
+  .modal-divider { height: 1px; background: #222; margin: 18px 0; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 8px; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px; }
+  .form-input {
+    width: 100%; padding: 9px 11px; background: var(--dark3);
+    border: 1px solid #2A2A2A; color: var(--text); font-family: 'Montserrat', sans-serif;
+    font-size: 13px; border-radius: 1px; outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--gold); }
+
+  .ingr-list-edit { margin-bottom: 14px; }
+  .ingr-edit-item {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 70px auto; gap: 6px;
+    align-items: center; margin-bottom: 6px; background: var(--dark3);
+    padding: 9px 10px; border-radius: 1px;
+  }
+  .ingr-edit-item input, .ingr-edit-item select {
+    padding: 6px 8px; background: var(--dark4); border: 1px solid #2A2A2A;
+    color: var(--text); font-family: 'Montserrat', sans-serif; font-size: 12px;
+    border-radius: 1px; outline: none; width: 100%; transition: border-color 0.2s;
+  }
+  .ingr-edit-item input:focus, .ingr-edit-item select:focus { border-color: var(--gold); }
+
+  .btn-icon {
+    width: 28px; height: 28px; border: 1px solid #C1121F; background: transparent;
+    color: #C1121F; cursor: pointer; border-radius: 1px; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0; outline: none;
+  }
+  .btn-icon:hover { background: #C1121F; color: white; }
+  .btn-icon-add {
+    width: 28px; height: 28px; border: 1px solid var(--gold); background: transparent;
+    color: var(--gold); cursor: pointer; border-radius: 1px; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; outline: none;
+  }
+  .btn-icon-add:hover { background: var(--gold); color: var(--black); }
+
+  .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid #222; }
+
+  /* STATUS */
+  .status-msg { font-size: 10px; padding: 6px 10px; border-radius: 1px; margin-top: 6px; }
+  .status-success { background: rgba(76,175,80,0.08); color: #4CAF50; border: 1px solid rgba(76,175,80,0.18); }
+  .status-error { background: rgba(193,18,31,0.08); color: #EF5350; border: 1px solid rgba(193,18,31,0.18); }
+  .status-info { background: rgba(201,168,76,0.08); color: var(--gold); border: 1px solid rgba(201,168,76,0.18); }
+
+  /* ===== FACTURE ===== */
+  .facture-layout { display: flex; flex: 1; overflow: hidden; }
+  .facture-sidebar {
+    width: 290px; flex-shrink: 0; background: var(--dark);
+    border-right: 1px solid #222; display: flex; flex-direction: column; overflow: hidden;
+  }
+  .facture-sidebar-header {
+    padding: 16px 20px; border-bottom: 1px solid #222;
+    font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted);
+  }
+  .facture-sidebar-scroll { flex: 1; overflow-y: auto; padding: 12px; }
+  .facture-recipe-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: var(--dark2); border: 1px solid #222; border-radius: 1px;
+    margin-bottom: 6px; cursor: pointer; transition: border-color 0.15s; user-select: none;
+  }
+  .facture-recipe-item:hover { border-color: #333; }
+  .facture-recipe-item.selected { border-color: rgba(201,168,76,0.35); background: rgba(201,168,76,0.04); }
+  .facture-recipe-name { font-size: 13px; color: var(--text); flex: 1; }
+  .facture-recipe-cost { font-size: 12px; color: var(--text-muted); }
+
+  .facture-main { flex: 1; overflow-y: auto; padding: 28px; }
+
+  /* MARGE BAR */
+  .marge-bar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 18px; background: var(--dark2); border: 1px solid #222;
+    border-radius: 1px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .marge-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+  .marge-select {
+    padding: 7px 10px; background: var(--dark3); border: 1px solid #2A2A2A;
+    color: var(--text); font-family: 'Montserrat', sans-serif; font-size: 12px;
+    border-radius: 1px; outline: none; cursor: pointer;
+  }
+  .marge-select:focus { border-color: var(--gold); }
+  .marge-custom { display: flex; align-items: center; gap: 6px; }
+  .marge-custom input {
+    width: 62px; padding: 7px 8px; background: var(--dark3); border: 1px solid #2A2A2A;
+    color: var(--text); font-family: 'Montserrat', sans-serif; font-size: 12px;
+    border-radius: 1px; outline: none; text-align: center;
+  }
+  .marge-custom input:focus { border-color: var(--gold); }
+
+  /* CLIENT INFO BAR */
+  .client-bar {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  /* FACTURE PREVIEW */
+  .facture-preview {
+    background: #F5F3EE; color: #111; border-radius: 2px;
+    padding: 44px; font-family: 'Montserrat', sans-serif; max-width: 680px;
+  }
+  .facture-logo { text-align: center; margin-bottom: 36px; }
+  .facture-logo-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 600;
+    letter-spacing: 8px; color: #111; margin-bottom: 5px;
+  }
+  .facture-logo-sub { font-size: 7px; letter-spacing: 5px; color: #999; text-transform: uppercase; margin-bottom: 8px; }
+  .facture-tricolor { width: 44px; height: 2px; background: linear-gradient(90deg, #003F8A 33%, #AAA 33% 66%, #C1121F 66%); margin: 0 auto; }
+  .facture-meta {
+    display: flex; justify-content: space-between; margin-bottom: 30px;
+    padding-bottom: 22px; border-bottom: 1px solid #DDD; flex-wrap: wrap; gap: 12px;
+  }
+  .facture-meta-label { font-size: 8px; letter-spacing: 2px; color: #AAA; text-transform: uppercase; margin-bottom: 4px; }
+  .facture-meta-value { font-size: 13px; color: #333; font-weight: 500; }
+  .facture-client-section { 
+    margin-bottom: 28px; padding: 16px; background: #EEECE7; border-radius: 1px;
+  }
+  .facture-client-title { font-size: 8px; letter-spacing: 3px; color: #999; text-transform: uppercase; margin-bottom: 10px; }
+  .facture-client-name { font-size: 15px; font-weight: 600; color: #111; }
+  .facture-client-detail { font-size: 11px; color: #666; margin-top: 4px; }
+
+  .facture-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  .facture-table th {
+    font-size: 8px; letter-spacing: 2px; color: #999; text-transform: uppercase;
+    padding: 8px 10px; border-bottom: 1px solid #DDD; text-align: left; font-weight: 400;
+  }
+  .facture-table th:last-child { text-align: right; }
+  .facture-table td {
+    padding: 11px 10px; border-bottom: 1px solid #EEE; font-size: 12px; color: #333;
+    vertical-align: top;
+  }
+  .facture-table td:last-child { text-align: right; font-weight: 500; }
+  .facture-table tr:last-child td { border-bottom: none; }
+  .facture-cat-row td {
+    font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: #999;
+    padding: 14px 10px 4px; font-weight: 400; background: transparent;
+  }
+  .facture-total-section {
+    border-top: 1px solid #CCC; padding-top: 18px;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  .facture-total-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: #777;
+  }
+  .facture-total-row.grand {
+    font-size: 18px; color: #111; font-weight: 600; margin-top: 8px; padding-top: 12px;
+    border-top: 1px solid #CCC;
+  }
+  .facture-footer {
+    text-align: center; margin-top: 36px; padding-top: 22px; border-top: 1px solid #EEE;
+    font-size: 8px; letter-spacing: 3px; color: #BBB; text-transform: uppercase;
+  }
+
+  /* EMPTY */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 56px; color: var(--text-muted); text-align: center; gap: 14px;
+  }
+  .empty-icon { font-size: 36px; opacity: 0.25; }
+  .empty-text { font-size: 11px; letter-spacing: 1px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #242424; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: #333; }
+
+  select option { background: #1A1A1A; color: var(--text); }
+
+  /* RECIPE DESCRIPTION */
+  .recipe-description {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 15px; font-weight: 300; color: var(--text-muted);
+    line-height: 1.7; letter-spacing: 0.3px;
+    padding: 14px 16px; background: rgba(201,168,76,0.03);
+    border-left: 2px solid rgba(201,168,76,0.25);
+    margin-bottom: 16px; border-radius: 0 1px 1px 0;
+  }
+  .form-textarea {
+    width: 100%; padding: 10px 11px; background: var(--dark3);
+    border: 1px solid #2A2A2A; color: var(--text); font-family: 'Cormorant Garamond', serif;
+    font-size: 15px; font-style: italic; font-weight: 300;
+    border-radius: 1px; outline: none; transition: border-color 0.2s;
+    resize: vertical; min-height: 90px; line-height: 1.6;
+  }
+  .form-textarea:focus { border-color: var(--gold); }
+  .form-textarea::placeholder { color: #444; font-style: italic; }
+
+  /* ADD INGR ROW */
+  .add-ingr-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 70px auto; gap: 6px;
+    align-items: end; margin-bottom: 6px;
+  }
+  .add-ingr-grid .form-input { padding: 7px 9px; font-size: 12px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="logo-zone">
+      <div>
+        <div class="logo-text">FOOD-X</div>
+        <div class="logo-sub">Private Chef by XIB</div>
+      </div>
+      <div class="tricolor"></div>
+    </div>
+    <div class="nav-tabs">
+      <div class="nav-tab active" onclick="showPage('home',this)">Accueil</div>
+      <div class="nav-tab" onclick="showPage('recettes',this)">Recettes</div>
+      <div class="nav-tab" onclick="showPage('facture',this)">Facture</div>
+    </div>
+    <div style="margin-left:auto; padding-right:4px;">
+      <span id="sync-status" style="font-size:9px; letter-spacing:1px; color:#888; transition: color 0.3s;"></span>
+    </div>
+  </nav>
+
+  <div class="main">
+
+    <!-- ===== HOME ===== -->
+    <div class="page active" id="page-home">
+      <div class="home-content">
+        <div class="home-bg-line" style="top:32%; transform:rotate(-1.5deg)"></div>
+        <div class="home-bg-line" style="top:68%; transform:rotate(1.5deg)"></div>
+        <div style="text-align:center">
+          <div class="home-logo-title">FOOD-X</div>
+          <div class="home-divider">
+            <div class="home-divider-line"></div>
+            <div class="home-tricolor"></div>
+            <div class="home-divider-line"></div>
+          </div>
+          <div class="home-chef">Private Chef by XIB</div>
+          <div class="home-tagline">More than food.</div>
+          <div class="home-stats">
+            <div class="home-stat">
+              <div class="home-stat-num" id="stat-entrees">0</div>
+              <div class="home-stat-label">Entrées</div>
+            </div>
+            <div class="home-stat">
+              <div class="home-stat-num" id="stat-plats">0</div>
+              <div class="home-stat-label">Plats</div>
+            </div>
+            <div class="home-stat">
+              <div class="home-stat-num" id="stat-desserts">0</div>
+              <div class="home-stat-label">Desserts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RECETTES ===== -->
+    <div class="page" id="page-recettes">
+      <div class="recettes-layout">
+        <div class="recettes-sidebar">
+          <div class="sidebar-section-title">Catégories</div>
+          <div class="sidebar-cat active" onclick="showCat('entrees',this)">Entrées</div>
+          <div class="sidebar-cat" onclick="showCat('plats',this)">Plats</div>
+          <div class="sidebar-cat" onclick="showCat('desserts',this)">Desserts</div>
+        </div>
+        <div class="recettes-main">
+          <div class="recettes-header">
+            <div class="section-title" id="cat-title">Entrées</div>
+            <button class="btn btn-gold" onclick="openNewRecipeModal()">+ Nouvelle recette</button>
+          </div>
+          <div class="recipe-grid" id="recipe-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FACTURE ===== -->
+    <div class="page" id="page-facture">
+      <div class="facture-layout">
+        <div class="facture-sidebar">
+          <div class="facture-sidebar-header">Sélectionner les plats</div>
+          <div class="facture-sidebar-scroll" id="facture-recipe-list"></div>
+        </div>
+        <div class="facture-main">
+          <div class="recettes-header">
+            <div class="section-title">Facture <span>client</span></div>
+            <button class="btn btn-gold" onclick="downloadFacture()">↓ Télécharger la facture PDF</button>
+          </div>
+
+          <!-- Client info -->
+          <div class="client-bar">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Nom du client</label>
+              <input class="form-input" id="client-nom" type="text" placeholder="M. Dupont" oninput="renderFacturePreview()">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Événement / Occasion</label>
+              <input class="form-input" id="client-event" type="text" placeholder="Dîner privé — 15 juin" oninput="renderFacturePreview()">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Numéro de facture</label>
+              <input class="form-input" id="facture-num" type="text" placeholder="Auto">
+            </div>
+          </div>
+
+          <!-- Marge -->
+          <div class="marge-bar">
+            <span class="marge-label">Marge appliquée</span>
+            <select class="marge-select" id="marge-select" onchange="updateMarge()">
+              <option value="30">30%</option>
+              <option value="40">40%</option>
+              <option value="50" selected>50%</option>
+              <option value="60">60%</option>
+              <option value="70">70%</option>
+              <option value="80">80%</option>
+              <option value="custom">Personnalisée</option>
+            </select>
+            <div class="marge-custom" id="marge-custom-zone" style="display:none">
+              <input type="number" id="marge-custom-input" min="0" max="99" value="50" oninput="updateMarge()">
+              <span class="marge-label">%</span>
+            </div>
+            <span class="marge-label" id="marge-info" style="color: var(--gold); margin-left:auto"></span>
+          </div>
+
+          <div id="facture-preview-zone"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MODAL RECETTE ===== -->
+<div class="modal-overlay" id="modal-recipe" onclick="if(event.target===this) closeModal('modal-recipe')">
+  <div class="modal">
+    <div class="modal-title" id="modal-recipe-title">Nouvelle recette</div>
+    <div class="modal-sub">Renseignez les informations de votre recette</div>
+
+    <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px;">
+      <div class="form-group">
+        <label class="form-label">Nom de la recette</label>
+        <input class="form-input" id="recipe-name" type="text" placeholder="Ex : Carpaccio de saint-Jacques">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catégorie</label>
+        <select class="form-input" id="recipe-cat">
+          <option value="entrees">Entrée</option>
+          <option value="plats">Plat</option>
+          <option value="desserts">Dessert</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Convives (base)</label>
+        <input class="form-input" id="recipe-convives" type="number" min="1" value="4">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Description & préparation de la recette</label>
+      <textarea class="form-textarea" id="recipe-description" placeholder="Décrivez ici les étapes de préparation, les techniques, les astuces du chef…"></textarea>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-sub" style="margin-bottom:12px;">Ingrédients</div>
+
+    <div class="ingr-list-edit" id="ingr-list-edit"></div>
+
+    <!-- Ajout ingrédient -->
+    <div class="add-ingr-grid">
+      <div>
+        <label class="form-label">Ingrédient</label>
+        <input class="form-input" id="new-ingr-name" type="text" placeholder="Ex : Saint-Jacques" onkeydown="if(event.key==='Enter') addIngredient()">
+      </div>
+      <div>
+        <label class="form-label">Quantité</label>
+        <input class="form-input" id="new-ingr-qty" type="number" step="0.001" min="0" placeholder="0.500">
+      </div>
+      <div>
+        <label class="form-label">Unité</label>
+        <select class="form-input" id="new-ingr-unit">
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="L">L</option>
+          <option value="cl">cl</option>
+          <option value="ml">ml</option>
+          <option value="pièce">pièce(s)</option>
+          <option value="botte">botte</option>
+          <option value="sachet">sachet</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">€ / unité</label>
+        <input class="form-input" id="new-ingr-price" type="number" step="0.01" min="0" placeholder="auto">
+      </div>
+      <div style="padding-top:18px">
+        <button class="btn-icon-add" onclick="addIngredient()" title="Ajouter l'ingrédient">+</button>
+      </div>
+    </div>
+
+    <div id="price-status" class="status-msg" style="display:none"></div>
+    <button class="btn btn-silver btn-sm" onclick="fetchIngredientPrice()" style="margin-top:8px; font-size:9px">
+      🔍 Rechercher le prix automatiquement (IA)
+    </button>
+
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="closeModal('modal-recipe')">Annuler</button>
+      <button class="btn btn-gold btn-sm" onclick="saveRecipe()">Enregistrer la recette</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== SUPABASE CONFIG =====
+// Remplacez ces deux valeurs par les vôtres (voir guide d'installation)
+const SUPABASE_URL = 'https://jqisryvrpszsbkfbdpgx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ODRonceMmY12ZQK1hdBAIQ_uYdvDdJw';
+
+// ===== STATE & STORAGE =====
+<script>
+(function(){
+  var MOT_DE_PASSE = 'vyhpem-0daFri-soqvaq';
+  if(localStorage.getItem('foodx_auth') !== MOT_DE_PASSE){
+    var saisi = prompt('FOOD-X — Accès privé\n\nMot de passe :');
+    if(saisi !== MOT_DE_PASSE){
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0A0A0A;color:#555;font-family:sans-serif;font-size:13px;letter-spacing:2px;">ACCÈS REFUSÉ</div>';
+      throw new Error('Unauthorized');
+    }
+    localStorage.setItem('foodx_auth', MOT_DE_PASSE);
+  }
+})();
+</script>
+const STORE_KEY = 'foodx_v2_recipes';
+let state = {
+  recipes: JSON.parse(localStorage.getItem(STORE_KEY) || '[]'),
+  currentCat: 'entrees',
+  editingId: null,
+  selectedForFacture: new Set(JSON.parse(localStorage.getItem('foodx_selected') || '[]')),
+  margePercent: 50,
+  syncing: false
+};
+let tempIngredients = [];
+
+// ===== SYNC WITH SUPABASE =====
+const supabaseConfigured = () => SUPABASE_URL !== 'https://jqisryvrpszsbkfbdpgx.supabase.co' && SUPABASE_KEY !== 'sb_publishable_ODRonceMmY12ZQK1hdBAIQ_uYdvDdJw';
+
+async function syncToCloud(recipesData) {
+  if (!supabaseConfigured()) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/foodx_data`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ id: 1, recipes: recipesData, updated_at: new Date().toISOString() })
+    });
+    showSyncStatus('✓ Sauvegardé en ligne', 'ok');
+  } catch(e) {
+    showSyncStatus('⚠ Sauvegarde locale uniquement', 'warn');
+  }
+}
+
+async function loadFromCloud() {
+  if (!supabaseConfigured()) return null;
+  try {
+    showSyncStatus('↻ Synchronisation...', 'syncing');
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/foodx_data?id=eq.1&select=recipes,updated_at`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const data = await res.json();
+    if (data && data.length > 0 && data[0].recipes) {
+      showSyncStatus('✓ Données synchronisées', 'ok');
+      return data[0].recipes;
+    }
+  } catch(e) {
+    showSyncStatus('⚠ Connexion impossible', 'warn');
+  }
+  return null;
+}
+
+function showSyncStatus(msg, type) {
+  let el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = type === 'ok' ? '#4CAF50' : type === 'warn' ? '#C9A84C' : '#888';
+  clearTimeout(el._timeout);
+  if (type === 'ok') el._timeout = setTimeout(() => { el.textContent = ''; }, 3000);
+}
+
+async function initData() {
+  const cloud = await loadFromCloud();
+  if (cloud && cloud.length > 0) {
+    state.recipes = cloud;
+    localStorage.setItem(STORE_KEY, JSON.stringify(cloud));
+  }
+  updateHomeStats();
+}
+
+function save() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state.recipes));
+  localStorage.setItem('foodx_selected', JSON.stringify([...state.selectedForFacture]));
+  syncToCloud(state.recipes);
+  updateHomeStats();
+}
+
+// ===== NAV =====
+function showPage(p, el) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  if (el) el.classList.add('active');
+  if (p === 'recettes') renderRecipes();
+  if (p === 'facture') { renderFactureSidebar(); renderFacturePreview(); }
+  if (p === 'home') updateHomeStats();
+}
+
+// ===== HOME =====
+function updateHomeStats() {
+  ['entrees','plats','desserts'].forEach(cat => {
+    const el = document.getElementById('stat-' + cat);
+    if (el) el.textContent = state.recipes.filter(r => r.cat === cat).length;
+  });
+}
+initData();
+
+// ===== CATEGORIES =====
+function showCat(cat, el) {
+  state.currentCat = cat;
+  document.querySelectorAll('.sidebar-cat').forEach(x => x.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const labels = { entrees: 'Entrées', plats: 'Plats', desserts: 'Desserts' };
+  document.getElementById('cat-title').innerHTML = labels[cat];
+  renderRecipes();
+}
+
+// ===== COST CALCULATION =====
+function calcCost(ing, qty) {
+  const p = ing.pricePerKg || 0;
+  if (ing.unit === 'g')  return (qty / 1000) * p;
+  if (ing.unit === 'kg') return qty * p;
+  if (ing.unit === 'L')  return qty * p;
+  if (ing.unit === 'cl') return (qty / 100) * p;
+  if (ing.unit === 'ml') return (qty / 1000) * p;
+  return qty * p; // pièce, botte, sachet
+}
+
+function calcRecipeTotalCost(recipe, convives) {
+  const ratio = convives / recipe.baseConvives;
+  return recipe.ingredients.reduce((sum, ing) => sum + calcCost(ing, ing.qty * ratio), 0);
+}
+
+function fmtQty(n) {
+  return n % 1 === 0 ? n.toString() : parseFloat(n.toFixed(3)).toString();
+}
+
+// ===== RENDER RECIPES =====
+function renderRecipes() {
+  const list = document.getElementById('recipe-list');
+  const recipes = state.recipes.filter(r => r.cat === state.currentCat);
+  if (!recipes.length) {
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🍽</div>
+      <div class="empty-text">Aucune recette dans cette catégorie</div>
+      <button class="btn btn-gold btn-sm" onclick="openNewRecipeModal()" style="margin-top:12px">+ Ajouter une recette</button>
+    </div>`;
+    return;
+  }
+  list.innerHTML = recipes.map(r => {
+    const conv = r.currentConvives || r.baseConvives;
+    const total = calcRecipeTotalCost(r, conv);
+    const sel = state.selectedForFacture.has(r.id);
+    return `<div class="recipe-card" id="rc-${r.id}">
+      <div class="recipe-card-header" onclick="toggleCard('${r.id}')">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div class="select-check ${sel?'checked':''}" id="chk-${r.id}"
+            onclick="event.stopPropagation(); toggleSelect('${r.id}')"></div>
+          <div class="recipe-card-title">${r.name}</div>
+        </div>
+        <div class="recipe-card-meta">
+          <span>${conv} pers.</span>
+          <span class="recipe-price">${total.toFixed(2)} €</span>
+          <span class="recipe-badge">${r.ingredients.length} ingr.</span>
+          <span class="recipe-chevron">▼</span>
+        </div>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-body-inner">
+          ${r.description ? `<div class="recipe-description">${r.description.replace(/\n/g,'<br>')}</div>` : ''}
+          <div class="convives-bar">
+            <span class="convives-label">Nombre de convives</span>
+            <div class="convives-ctrl">
+              <button class="convives-btn" onclick="changeConvives('${r.id}',-1)">−</button>
+              <span class="convives-num">${conv}</span>
+              <button class="convives-btn" onclick="changeConvives('${r.id}',1)">+</button>
+              <span class="convives-unit">personnes</span>
+            </div>
+          </div>
+          <table class="ingr-table">
+            <thead>
+              <tr>
+                <th>Ingrédient</th><th>Quantité</th><th>Prix / unité</th><th style="text-align:right">Coût</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${r.ingredients.map(ing => {
+                const ratio = conv / r.baseConvives;
+                const qty = ing.qty * ratio;
+                const cost = calcCost(ing, qty);
+                const priceLabel = ing.pricePerKg
+                  ? `${ing.pricePerKg.toFixed(2)} € / ${ing.unit === 'pièce' ? 'pièce' : 'kg'}`
+                  : '— non renseigné';
+                return `<tr>
+                  <td>${ing.name}</td>
+                  <td class="ingr-qty">${fmtQty(qty)} ${ing.unit}</td>
+                  <td class="ingr-price-col">${priceLabel}</td>
+                  <td class="ingr-total">${cost.toFixed(2)} €</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+          <div class="recipe-total-bar">
+            <span class="recipe-total-label">Coût total matières premières</span>
+            <span class="recipe-total-price">${total.toFixed(2)} €</span>
+          </div>
+          <div class="recipe-total-bar" style="margin-top:6px; background:rgba(255,255,255,0.015);">
+            <span class="recipe-total-label">Coût par convive</span>
+            <span class="recipe-total-price" style="font-size:18px">${conv > 0 ? (total/conv).toFixed(2) : '0.00'} €</span>
+          </div>
+          <div class="recipe-actions">
+            <button class="btn btn-silver btn-sm" onclick="editRecipe('${r.id}')">Modifier</button>
+            <button class="btn btn-gold btn-sm" onclick="downloadRecipe('${r.id}')">↓ Fiche recette</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">Supprimer</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(id) {
+  document.getElementById('rc-' + id).classList.toggle('open');
+}
+
+function changeConvives(id, delta) {
+  const r = state.recipes.find(x => x.id === id);
+  if (!r) return;
+  r.currentConvives = Math.max(1, (r.currentConvives || r.baseConvives) + delta);
+  save();
+  renderRecipes();
+  setTimeout(() => document.getElementById('rc-'+id).classList.add('open'), 10);
+}
+
+function toggleSelect(id) {
+  if (state.selectedForFacture.has(id)) state.selectedForFacture.delete(id);
+  else state.selectedForFacture.add(id);
+  save();
+  renderRecipes();
+  setTimeout(() => document.getElementById('rc-'+id).classList.add('open'), 10);
+}
+
+function deleteRecipe(id) {
+  if (!confirm('Supprimer définitivement cette recette ?')) return;
+  state.recipes = state.recipes.filter(r => r.id !== id);
+  state.selectedForFacture.delete(id);
+  save();
+  renderRecipes();
+}
+
+// ===== MODAL =====
+function openNewRecipeModal() {
+  state.editingId = null;
+  tempIngredients = [];
+  document.getElementById('recipe-name').value = '';
+  document.getElementById('recipe-cat').value = state.currentCat;
+  document.getElementById('recipe-convives').value = '4';
+  document.getElementById('recipe-description').value = '';
+  document.getElementById('new-ingr-name').value = '';
+  document.getElementById('new-ingr-qty').value = '';
+  document.getElementById('new-ingr-price').value = '';
+  document.getElementById('new-ingr-unit').value = 'kg';
+  document.getElementById('price-status').style.display = 'none';
+  document.getElementById('modal-recipe-title').textContent = 'Nouvelle recette';
+  renderIngrList();
+  document.getElementById('modal-recipe').classList.add('open');
+  setTimeout(() => document.getElementById('recipe-name').focus(), 100);
+}
+
+function editRecipe(id) {
+  const r = state.recipes.find(x => x.id === id);
+  if (!r) return;
+  state.editingId = id;
+  tempIngredients = r.ingredients.map(i => ({...i}));
+  document.getElementById('recipe-name').value = r.name;
+  document.getElementById('recipe-cat').value = r.cat;
+  document.getElementById('recipe-convives').value = r.baseConvives;
+  document.getElementById('recipe-description').value = r.description || '';
+  document.getElementById('modal-recipe-title').textContent = 'Modifier la recette';
+  document.getElementById('price-status').style.display = 'none';
+  renderIngrList();
+  document.getElementById('modal-recipe').classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function renderIngrList() {
+  const list = document.getElementById('ingr-list-edit');
+  if (!tempIngredients.length) {
+    list.innerHTML = `<div style="color:var(--text-muted); font-size:11px; padding:10px; text-align:center; border:1px dashed #2A2A2A; border-radius:1px; margin-bottom:12px;">Aucun ingrédient — ajoutez-en ci-dessous</div>`;
+    return;
+  }
+  list.innerHTML = tempIngredients.map((ing, i) => `
+    <div class="ingr-edit-item">
+      <input value="${ing.name}" placeholder="Ingrédient" onchange="tempIngredients[${i}].name=this.value">
+      <input type="number" step="0.001" value="${ing.qty}" placeholder="Qté" onchange="tempIngredients[${i}].qty=parseFloat(this.value)||0">
+      <select onchange="tempIngredients[${i}].unit=this.value">
+        ${['kg','g','L','cl','ml','pièce','botte','sachet'].map(u=>`<option${u===ing.unit?' selected':''}>${u}</option>`).join('')}
+      </select>
+      <input type="number" step="0.01" value="${ing.pricePerKg||''}" placeholder="€/kg" onchange="tempIngredients[${i}].pricePerKg=parseFloat(this.value)||0">
+      <button class="btn-icon" onclick="removeIngr(${i})" title="Supprimer">×</button>
+    </div>
+  `).join('');
+}
+
+function removeIngr(i) {
+  tempIngredients.splice(i, 1);
+  renderIngrList();
+}
+
+function addIngredient() {
+  const name = document.getElementById('new-ingr-name').value.trim();
+  const qty = parseFloat(document.getElementById('new-ingr-qty').value);
+  const unit = document.getElementById('new-ingr-unit').value;
+  const price = parseFloat(document.getElementById('new-ingr-price').value) || 0;
+  if (!name) { showPriceStatus('Veuillez saisir un nom d\'ingrédient', 'error'); return; }
+  if (!qty || qty <= 0) { showPriceStatus('Veuillez saisir une quantité valide', 'error'); return; }
+  tempIngredients.push({ name, qty, unit, pricePerKg: price });
+  document.getElementById('new-ingr-name').value = '';
+  document.getElementById('new-ingr-qty').value = '';
+  document.getElementById('new-ingr-price').value = '';
+  document.getElementById('price-status').style.display = 'none';
+  renderIngrList();
+  document.getElementById('new-ingr-name').focus();
+}
+
+async function fetchIngredientPrice() {
+  const name = document.getElementById('new-ingr-name').value.trim();
+  if (!name) { showPriceStatus('Saisissez d\'abord un nom d\'ingrédient', 'error'); return; }
+  showPriceStatus('Recherche en cours via l\'IA…', 'info');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        messages: [{
+          role: 'user',
+          content: `Prix moyen au kilogramme en euros en France (2024-2025) pour : "${name}".
+Réponds UNIQUEMENT avec ce JSON exact, rien d'autre :
+{"price": X.XX, "unit": "kg", "note": "très courte note"}
+Si vendu à la pièce (ex: citron, oeuf), utilise unit: "pièce" et price = prix à la pièce.`
+        }]
+      })
+    });
+    const data = await res.json();
+    const txt = data.content.map(c => c.text||'').join('').replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(txt);
+    document.getElementById('new-ingr-price').value = parsed.price;
+    if (parsed.unit === 'pièce') {
+      document.getElementById('new-ingr-unit').value = 'pièce';
+    }
+    showPriceStatus(`✓ Prix estimé : ${parsed.price} € / ${parsed.unit} — ${parsed.note}`, 'success');
+  } catch(e) {
+    showPriceStatus('Impossible de récupérer le prix automatiquement. Saisissez-le manuellement.', 'error');
+  }
+}
+
+function showPriceStatus(msg, type) {
+  const el = document.getElementById('price-status');
+  el.style.display = 'block';
+  el.textContent = msg;
+  el.className = 'status-msg status-' + type;
+}
+
+function saveRecipe() {
+  const name = document.getElementById('recipe-name').value.trim();
+  const cat = document.getElementById('recipe-cat').value;
+  const convives = parseInt(document.getElementById('recipe-convives').value) || 4;
+  const description = document.getElementById('recipe-description').value.trim();
+  if (!name) { alert('Veuillez donner un nom à la recette.'); return; }
+  if (!tempIngredients.length) { alert('Ajoutez au moins un ingrédient.'); return; }
+  if (state.editingId) {
+    const idx = state.recipes.findIndex(r => r.id === state.editingId);
+    if (idx !== -1) {
+      state.recipes[idx] = { ...state.recipes[idx], name, cat, baseConvives: convives, description, ingredients: tempIngredients };
+    }
+  } else {
+    state.recipes.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+      name, cat, baseConvives: convives, currentConvives: convives,
+      description,
+      ingredients: tempIngredients,
+      createdAt: new Date().toISOString()
+    });
+  }
+  save();
+  closeModal('modal-recipe');
+  state.currentCat = cat;
+  document.querySelectorAll('.sidebar-cat').forEach((el, i) => {
+    const cats = ['entrees','plats','desserts'];
+    el.classList.toggle('active', cats[i] === cat);
+  });
+  const labels = { entrees: 'Entrées', plats: 'Plats', desserts: 'Desserts' };
+  document.getElementById('cat-title').innerHTML = labels[cat];
+  renderRecipes();
+}
+
+// ===== FACTURE =====
+function renderFactureSidebar() {
+  const list = document.getElementById('facture-recipe-list');
+  if (!state.recipes.length) {
+    list.innerHTML = `<div class="empty-state" style="padding:24px;"><div class="empty-text">Aucune recette créée</div></div>`;
+    return;
+  }
+  const cats = [
+    { key: 'entrees', label: 'Entrées' },
+    { key: 'plats', label: 'Plats' },
+    { key: 'desserts', label: 'Desserts' }
+  ];
+  let html = '';
+  cats.forEach(({ key, label }) => {
+    const items = state.recipes.filter(r => r.cat === key);
+    if (!items.length) return;
+    html += `<div style="font-size:8px; letter-spacing:3px; color:#444; text-transform:uppercase; padding:12px 4px 6px; font-weight:400">${label}</div>`;
+    items.forEach(r => {
+      const conv = r.currentConvives || r.baseConvives;
+      const cost = calcRecipeTotalCost(r, conv);
+      const sel = state.selectedForFacture.has(r.id);
+      html += `<div class="facture-recipe-item ${sel?'selected':''}" onclick="toggleFactureSelect('${r.id}')">
+        <div class="select-check ${sel?'checked':''}"></div>
+        <div style="flex:1; min-width:0;">
+          <div class="facture-recipe-name" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.name}</div>
+          <div style="font-size:9px; color:var(--text-muted); margin-top:3px;">${conv} pers.</div>
+        </div>
+        <div class="facture-recipe-cost">${cost.toFixed(2)} €</div>
+      </div>`;
+    });
+  });
+  list.innerHTML = html;
+}
+
+function toggleFactureSelect(id) {
+  if (state.selectedForFacture.has(id)) state.selectedForFacture.delete(id);
+  else state.selectedForFacture.add(id);
+  save();
+  renderFactureSidebar();
+  renderFacturePreview();
+}
+
+function updateMarge() {
+  const sel = document.getElementById('marge-select');
+  const cz = document.getElementById('marge-custom-zone');
+  if (sel.value === 'custom') {
+    cz.style.display = 'flex';
+    state.margePercent = parseFloat(document.getElementById('marge-custom-input').value) || 50;
+  } else {
+    cz.style.display = 'none';
+    state.margePercent = parseFloat(sel.value);
+  }
+  const coeff = 100 / (100 - state.margePercent);
+  document.getElementById('marge-info').textContent = `Coefficient ×${coeff.toFixed(2)}`;
+  renderFacturePreview();
+}
+updateMarge();
+
+function renderFacturePreview() {
+  const zone = document.getElementById('facture-preview-zone');
+  if (!zone) return;
+  const selected = state.recipes.filter(r => state.selectedForFacture.has(r.id));
+  if (!selected.length) {
+    zone.innerHTML = `<div class="empty-state" style="padding:60px;">
+      <div class="empty-icon">📋</div>
+      <div class="empty-text">Sélectionnez des plats dans le panneau gauche<br>pour générer votre facture</div>
+    </div>`;
+    return;
+  }
+  const coeff = 100 / (100 - state.margePercent);
+  const today = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+  const numFacture = document.getElementById('facture-num').value || ('FX-' + Date.now().toString().slice(-6));
+  const clientNom = document.getElementById('client-nom').value.trim();
+  const clientEvent = document.getElementById('client-event').value.trim();
+
+  const cats = [
+    { key: 'entrees', label: 'Entrées' },
+    { key: 'plats', label: 'Plats' },
+    { key: 'desserts', label: 'Desserts' }
+  ];
+
+  let totalBrut = 0;
+  let rowsHtml = '';
+  cats.forEach(({ key, label }) => {
+    const items = selected.filter(r => r.cat === key);
+    if (!items.length) return;
+    rowsHtml += `<tr class="facture-cat-row"><td colspan="4">${label}</td></tr>`;
+    items.forEach(r => {
+      const conv = r.currentConvives || r.baseConvives;
+      const cost = calcRecipeTotalCost(r, conv);
+      const ttc = cost * coeff;
+      totalBrut += cost;
+      rowsHtml += `<tr>
+        <td>
+          <strong style="font-size:13px;">${r.name}</strong><br>
+          <span style="font-size:10px; color:#999;">${conv} convive${conv>1?'s':''}</span>
+        </td>
+        <td style="font-size:11px; color:#AAA; white-space:nowrap;">${cost.toFixed(2)} €</td>
+        <td style="font-size:11px; color:#AAA; white-space:nowrap;">× ${coeff.toFixed(2)}</td>
+        <td style="white-space:nowrap;">${ttc.toFixed(2)} €</td>
+      </tr>`;
+    });
+  });
+
+  const totalClient = totalBrut * coeff;
+  const benefice = totalClient - totalBrut;
+
+  const clientHtml = (clientNom || clientEvent) ? `
+    <div class="facture-client-section">
+      <div class="facture-client-title">Client</div>
+      ${clientNom ? `<div class="facture-client-name">${clientNom}</div>` : ''}
+      ${clientEvent ? `<div class="facture-client-detail">${clientEvent}</div>` : ''}
+    </div>` : '';
+
+  zone.innerHTML = `<div class="facture-preview" id="facture-printable">
+    <div class="facture-logo">
+      <div class="facture-logo-title">FOOD-X</div>
+      <div class="facture-logo-sub">Private Chef by XIB</div>
+      <div class="facture-tricolor"></div>
+    </div>
+    <div class="facture-meta">
+      <div>
+        <div class="facture-meta-label">N° Facture</div>
+        <div class="facture-meta-value">${numFacture}</div>
+      </div>
+      <div>
+        <div class="facture-meta-label">Date</div>
+        <div class="facture-meta-value">${today}</div>
+      </div>
+      <div>
+        <div class="facture-meta-label">Marge</div>
+        <div class="facture-meta-value">${state.margePercent} %</div>
+      </div>
+    </div>
+    ${clientHtml}
+    <table class="facture-table">
+      <thead>
+        <tr>
+          <th>Prestation</th>
+          <th>Coût mat.</th>
+          <th>Coeff.</th>
+          <th>Prix client</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <div class="facture-total-section">
+      <div class="facture-total-row"><span>Total coût matières premières</span><span>${totalBrut.toFixed(2)} €</span></div>
+      <div class="facture-total-row"><span>Marge chef (${state.margePercent}%)</span><span>+ ${benefice.toFixed(2)} €</span></div>
+      <div class="facture-total-row grand"><span>Total à facturer</span><span>${totalClient.toFixed(2)} €</span></div>
+    </div>
+    <div class="facture-footer">
+      Food-X — Private Chef by XIB — More than food.
+    </div>
+  </div>`;
+}
+
+function downloadFacture() {
+  const el = document.getElementById('facture-printable');
+  if (!el) { alert("Sélectionnez d'abord des plats pour générer la facture."); return; }
+  const numFacture = document.getElementById('facture-num').value || ('FX-' + Date.now().toString().slice(-6));
+  const safeName = numFacture.replace(/[^a-zA-Z0-9]/g,'_');
+
+  // Inline all styles from the facture-preview element into a self-contained page
+  const factureCss = `
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Montserrat',sans-serif;background:#F5F3EE;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    #wrap{max-width:720px;margin:0 auto;padding:48px 52px;background:#F5F3EE;}
+    .facture-logo{text-align:center;margin-bottom:32px;}
+    .facture-logo-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;letter-spacing:8px;color:#111;margin-bottom:5px;}
+    .facture-logo-sub{font-size:7px;letter-spacing:5px;color:#999;text-transform:uppercase;margin-bottom:8px;}
+    .facture-tricolor{width:44px;height:2px;background:linear-gradient(90deg,#003F8A 33%,#AAA 33% 66%,#C1121F 66%);margin:0 auto;}
+    .facture-meta{display:flex;justify-content:space-between;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid #DDD;flex-wrap:wrap;gap:12px;}
+    .facture-meta-label{font-size:8px;letter-spacing:2px;color:#AAA;text-transform:uppercase;margin-bottom:4px;}
+    .facture-meta-value{font-size:13px;color:#333;font-weight:500;}
+    .facture-client-section{margin-bottom:26px;padding:14px;background:#EEECE7;}
+    .facture-client-title{font-size:8px;letter-spacing:3px;color:#999;text-transform:uppercase;margin-bottom:8px;}
+    .facture-client-name{font-size:15px;font-weight:600;color:#111;}
+    .facture-client-detail{font-size:11px;color:#666;margin-top:4px;}
+    table{width:100%;border-collapse:collapse;margin-bottom:22px;}
+    th{font-size:8px;letter-spacing:2px;color:#999;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid #DDD;text-align:left;font-weight:400;}
+    th:last-child{text-align:right;}
+    td{padding:10px 10px;border-bottom:1px solid #EEE;font-size:12px;color:#333;vertical-align:top;}
+    td:last-child{text-align:right;font-weight:500;}
+    tr:last-child td{border-bottom:none;}
+    .facture-cat-row td{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#999;padding:13px 10px 4px;font-weight:400;}
+    .facture-total-section{border-top:1px solid #CCC;padding-top:16px;display:flex;flex-direction:column;gap:7px;}
+    .facture-total-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#777;}
+    .facture-total-row.grand{font-size:17px;color:#111;font-weight:600;margin-top:8px;padding-top:10px;border-top:1px solid #CCC;}
+    .facture-footer{text-align:center;margin-top:32px;padding-top:20px;border-top:1px solid #EEE;font-size:8px;letter-spacing:3px;color:#BBB;text-transform:uppercase;}
+  `;
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Facture ${safeName}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
+<style>${factureCss}<\/style>
+</head>
+<body>
+<div id="wrap">${el.innerHTML}<\/div>
+<script>
+document.fonts.ready.then(function(){
+  var opt = {
+    margin: 0,
+    filename: 'Facture_FOODX_${safeName}.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#F5F3EE', logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(document.getElementById('wrap')).save().then(function(){
+    setTimeout(function(){ window.close(); }, 1000);
+  });
+});
+<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], {type: 'text/html'});
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if (!win) {
+    alert("Veuillez autoriser les popups pour ce site afin de télécharger la facture.");
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+function downloadRecipe(id) {
+  const r = state.recipes.find(x => x.id === id);
+  if (!r) return;
+  const conv = r.currentConvives || r.baseConvives;
+  const catLabels = { entrees: 'Entrée', plats: 'Plat', desserts: 'Dessert' };
+  const today = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const safeName = r.name.replace(/[^a-zA-Z0-9]/g,'_');
+
+  const ingrsHtml = r.ingredients.map(ing => {
+    const qty = ing.qty * (conv / r.baseConvives);
+    return `<tr><td class="td-qty">${fmtQty(qty)}</td><td class="td-unit">${ing.unit}</td><td class="td-name">${ing.name}</td></tr>`;
+  }).join('');
+
+  let prepHtml = '<p class="no-prep">Aucune préparation renseignée.</p>';
+  if (r.description && r.description.trim()) {
+    const lines = r.description.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length === 1) {
+      prepHtml = `<p class="prep-text">${r.description.replace(/\n/g,'<br>')}</p>`;
+    } else {
+      prepHtml = lines.map((l,i) => `
+        <div class="step">
+          <span class="step-num">${String(i+1).padStart(2,'0')}</span>
+          <span class="step-text">${l}</span>
+        </div>`).join('');
+    }
+  }
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>${r.name}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 210mm; background: #F8F6F1; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Montserrat', sans-serif; font-size: 11px; color: #222; }
+
+  .header {
+    background: #0A0A0A;
+    padding: 22px 40px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 600; letter-spacing: 6px; color: #CCCCCC; margin-bottom: 2px;
+  }
+  .brand-sub { font-size: 7px; letter-spacing: 3px; color: #444; text-transform: uppercase; }
+  .header-cat { font-size: 7px; letter-spacing: 3px; color: #C9A84C; text-transform: uppercase; margin-bottom: 5px; text-align: right; }
+  .tricolor { width: 24px; height: 2px; background: linear-gradient(90deg, #003F8A 33%, #888 33% 66%, #C1121F 66%); margin-left: auto; }
+
+  .title-section { background: #0A0A0A; padding: 0 40px 28px; }
+  .gold-line { height: 1px; background: linear-gradient(90deg, #C9A84C, rgba(201,168,76,0.05)); margin-bottom: 18px; }
+  .recipe-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 44px; font-weight: 300; letter-spacing: 1px; line-height: 1; color: #D5D0C8; margin-bottom: 16px;
+  }
+  .chips { display: flex; }
+  .chip {
+    padding: 4px 12px; border: 1px solid #2A2A2A; margin-right: -1px;
+    font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: #555;
+  }
+  .chip strong { color: #C9A84C; font-weight: 500; }
+
+  .body { padding: 30px 40px 40px; display: flex; gap: 36px; align-items: flex-start; }
+  .col-left { width: 170px; flex-shrink: 0; }
+  .col-right { flex: 1; min-width: 0; }
+
+  .col-title {
+    font-size: 7px; letter-spacing: 4px; text-transform: uppercase; color: #C9A84C;
+    font-weight: 500; margin-bottom: 14px; border-bottom: 1px solid #D4B870; padding-bottom: 6px;
+  }
+
+  .ing-table { width: 100%; border-collapse: collapse; }
+  .ing-table tr { border-bottom: 1px solid #E8E5DE; }
+  .ing-table tr:first-child { border-top: 1px solid #E8E5DE; }
+  .td-qty { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: #1C1C1C; padding: 7px 0; white-space: nowrap; width: 52px; vertical-align: middle; }
+  .td-unit { font-size: 8px; color: #999; letter-spacing: 1px; padding: 7px 6px 7px 3px; white-space: nowrap; vertical-align: middle; }
+  .td-name { font-size: 11px; color: #444; padding: 7px 0; border-left: 1px solid #DDD; padding-left: 8px; vertical-align: middle; line-height: 1.3; }
+
+  .prep-text { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; font-weight: 300; color: #333; line-height: 1.85; }
+  .step { display: flex; gap: 12px; padding: 13px 0; border-bottom: 1px solid #E8E5DE; align-items: flex-start; }
+  .step:first-child { padding-top: 0; }
+  .step:last-child { border-bottom: none; }
+  .step-num { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; color: #D5CEBC; line-height: 1; flex-shrink: 0; width: 36px; text-align: right; padding-top: 1px; }
+  .step-text { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 300; color: #2A2A2A; line-height: 1.75; padding-top: 4px; }
+  .no-prep { font-size: 11px; color: #CCC; font-style: italic; }
+
+  .footer {
+    background: #F0EDE6; padding: 11px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #DDD9CF;
+  }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; letter-spacing: 5px; color: #999; }
+  .footer-tag { font-size: 7px; letter-spacing: 2px; color: #BBB; text-transform: uppercase; text-align: right; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="brand-name">FOOD-X</div>
+    <div class="brand-sub">Private Chef by XIB</div>
+  </div>
+  <div>
+    <div class="header-cat">${catLabels[r.cat] || r.cat}</div>
+    <div class="tricolor"></div>
+  </div>
+</div>
+
+<div class="title-section">
+  <div class="gold-line"></div>
+  <div class="recipe-title">${r.name}</div>
+  <div class="chips">
+    <div class="chip">Pour <strong>${conv} convive${conv > 1 ? 's' : ''}</strong></div>
+    <div class="chip"><strong>${r.ingredients.length}</strong> ingrédient${r.ingredients.length > 1 ? 's' : ''}</div>
+    <div class="chip">${today}</div>
+  </div>
+</div>
+
+<div class="body">
+  <div class="col-left">
+    <div class="col-title">Ingrédients</div>
+    <table class="ing-table">${ingrsHtml}</table>
+  </div>
+  <div class="col-right">
+    <div class="col-title">Préparation</div>
+    ${prepHtml}
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-logo">FOOD-X</div>
+  <div class="footer-tag">More than food.<br>Private Chef by XIB</div>
+</div>
+
+<script>
+document.fonts.ready.then(function() {
+  var opt = {
+    margin:      0,
+    filename:    'Recette_FOODX_${safeName}.pdf',
+    image:       { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#F8F6F1', logging: false },
+    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(document.body).save().then(function() {
+    setTimeout(function() { window.close(); }, 800);
+  });
+});
+<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const win  = window.open(url, '_blank');
+  if (!win) alert("Veuillez autoriser les popups pour télécharger la fiche recette.");
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+}
+
+// Keyboard shortcut: Escape closes modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal('modal-recipe');
+});
+</script>
+</body>
+</html>
