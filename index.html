@@ -9,7 +9,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --gold:#C9A84C;--gold-light:#E8D5A0;--silver:#B8BCC8;
+  --gold:#F0EBE0;--gold-light:#F8F4EE;--silver:#B8BCC8;
   --black:#0A0A0A;--dark:#111;--dark2:#1A1A1A;--dark3:#222;--dark4:#2A2A2A;
   --text:#E8E4DC;--muted:#888;--red:#C1121F;--blue:#003F8A;
 }
@@ -30,7 +30,7 @@ html,body{height:100%;background:var(--black);color:var(--text);font-family:'Mon
 .page{display:none;flex:1;overflow:hidden;flex-direction:column}
 .page.on{display:flex}
 /* HOME */
-.home{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#1A1400,var(--black) 65%)}
+.home{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#111111,var(--black) 65%)}
 .h-title{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;letter-spacing:14px;background:linear-gradient(180deg,#E0E0E0,#888 40%,#C0C0C0 70%,#666);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:10px}
 .h-div{display:flex;align-items:center;gap:14px;margin:14px auto;width:340px}
 .h-line{flex:1;height:1px;background:#2A2A2A}
@@ -182,6 +182,7 @@ select option{background:#1A1A1A;color:var(--text)}
       <div class="tab"     data-page="recettes">Recettes</div>
       <div class="tab"     data-page="facture">Facture</div>
       <div class="tab"     data-page="devis">Devis</div>
+      <div class="tab"     data-page="carte">Carte</div>
     </div>
     <div style="margin-left:auto;padding-right:4px">
       <span id="sync-st" style="font-size:9px;letter-spacing:1px;color:#888"></span>
@@ -349,6 +350,17 @@ select option{background:#1A1A1A;color:var(--text)}
           <div id="dev-preview"></div>
         </div>
       </div>
+
+    <!-- CARTE -->
+    <div class="page" id="pg-carte">
+      <div class="main-area" style="display:flex;flex-direction:column">
+        <div class="pg-head">
+          <div class="pg-title">Carte <span>des plats</span></div>
+          <button class="btn btn-g" onclick="dlCarte()">↓ Télécharger la carte PDF</button>
+        </div>
+        <div id="carte-preview" style="max-width:680px"></div>
+      </div>
+    </div>
     </div>
 
   </div>
@@ -397,7 +409,7 @@ async function syncCloud(r){
       headers:Object.assign(sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),
       body:JSON.stringify({id:1,recipes:r,updated_at:new Date().toISOString()})});
     showSync('✓ Sauvegardé','#4CAF50');
-  }catch(e){showSync('⚠ Local seulement','#C9A84C')}
+  }catch(e){showSync('⚠ Local seulement','#F0EBE0')}
 }
 
 async function loadCloud(){
@@ -410,7 +422,7 @@ async function loadCloud(){
       localStorage.setItem('fx_r',JSON.stringify(state.recipes));
       showSync('✓ Synchronisé','#4CAF50');
     }else{showSync('','#888')}
-  }catch(e){showSync('⚠ Hors ligne','#C9A84C')}
+  }catch(e){showSync('⚠ Hors ligne','#F0EBE0')}
   updateStats();
 }
 
@@ -449,6 +461,7 @@ document.querySelectorAll('.tab').forEach(function(t){
     if(p==='recettes')renderRecipes();
     if(p==='facture'){renderFacSb();renderFac()}
     if(p==='devis'){renderDevSb();renderDev()}
+    if(p==='carte')renderCarte();
     if(p==='home')updateStats();
   });
 });
@@ -790,7 +803,7 @@ function buildFacHTML(d,acompte,solde,isInterne){
   var chefBlock=d.chefNom+(d.chefAdr?'<br>'+d.chefAdr:'')+(d.chefSir?'<br><span style="font-size:10px;color:#AAA">SIRET : '+d.chefSir+'</span>':'');
   var clBlock=d.clNom?d.clNom+(d.clAdr?'<br>'+d.clAdr:''):'<span style="color:#CCC;font-style:italic">Non renseigné</span>';
   var evRow=d.clEv?'<div style="margin-top:4px;font-size:10px;color:#888;font-style:italic">'+d.clEv+'</div>':'';
-  var label=isInterne?'FACTURE <span style="font-size:11px;border:1px solid #C9A84C;color:#C9A84C;padding:2px 8px;letter-spacing:2px;vertical-align:middle">INTERNE</span>':'FACTURE';
+  var label=isInterne?'FACTURE <span style="font-size:11px;border:1px solid #F0EBE0;color:#F0EBE0;padding:2px 8px;letter-spacing:2px;vertical-align:middle">INTERNE</span>':'FACTURE';
   var html='<div class="fpreview">';
   // Header
   html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #DDD">';
@@ -821,11 +834,11 @@ function buildFacHTML(d,acompte,solde,isInterne){
   html+='<div class="f-row" style="margin-top:6px;color:#999;font-size:11px"><span>Total TTC (TVA non applicable — Art. 293 B du CGI)</span><span>'+d.totalHT.toFixed(2)+' €</span></div>';
   if(acompte>0){
     html+='<div class="f-row"><span>Acompte versé</span><span>− '+acompte.toFixed(2)+' €</span></div>';
-    html+='<div class="f-row" style="color:#C9A84C;font-weight:600"><span>Solde restant dû</span><span>'+solde.toFixed(2)+' €</span></div>';
+    html+='<div class="f-row" style="color:#F0EBE0;font-weight:600"><span>Solde restant dû</span><span>'+solde.toFixed(2)+' €</span></div>';
   }
   if(isInterne){
     var benefice=d.totalHT-d.totalMP;
-    html+='<div class="f-row" style="margin-top:10px;padding-top:10px;border-top:1px solid #DDD;color:#C9A84C;font-weight:600"><span>Bénéfice net estimé (total − matières premières)</span><span>+ '+benefice.toFixed(2)+' €</span></div>';
+    html+='<div class="f-row" style="margin-top:10px;padding-top:10px;border-top:1px solid #DDD;color:#F0EBE0;font-weight:600"><span>Bénéfice net estimé (total − matières premières)</span><span>+ '+benefice.toFixed(2)+' €</span></div>';
   }
   html+='</div>';
   // Paiement
@@ -865,7 +878,7 @@ function buildDevHTML(d,acomptePct,acompte,validite,expStr){
   html+='<div style="text-align:right"><div style="font-size:22px;font-family:Cormorant Garamond,serif;font-weight:300;color:#111;letter-spacing:2px">DEVIS</div>';
   html+='<div style="font-size:13px;font-weight:600;color:#333;margin-top:4px">N° '+d.numDoc+'</div>';
   html+='<div style="font-size:11px;color:#999;margin-top:2px">Émis le '+d.today+'</div>';
-  html+='<div style="font-size:11px;color:#C9A84C;margin-top:2px">Valable jusqu\'au '+expStr+'</div></div></div>';
+  html+='<div style="font-size:11px;color:#F0EBE0;margin-top:2px">Valable jusqu\'au '+expStr+'</div></div></div>';
   // Parties
   html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px">';
   html+='<div><div class="f-ml">Prestataire</div><div style="font-size:13px;color:#222;line-height:1.7">'+chefBlock+'</div></div>';
@@ -886,7 +899,7 @@ function buildDevHTML(d,acomptePct,acompte,validite,expStr){
   if(d.frais>0)html+='<div class="f-row"><span>Sous-total prestation</span><span>'+d.frais.toFixed(2)+' €</span></div>';
   html+='<div class="f-row f-grand"><span>Total estimé</span><span>'+d.totalHT.toFixed(2)+' €</span></div>';
   html+='<div class="f-row" style="margin-top:6px;color:#999;font-size:11px"><span>Total estimé TTC (TVA non applicable — Art. 293 B du CGI)</span><span>'+d.totalHT.toFixed(2)+' €</span></div>';
-  if(acomptePct>0)html+='<div class="f-row" style="color:#C9A84C;font-weight:600;margin-top:8px;padding-top:10px;border-top:1px solid #DDD"><span>Acompte demandé ('+acomptePct+'%)</span><span>'+acompte.toFixed(2)+' €</span></div>';
+  if(acomptePct>0)html+='<div class="f-row" style="color:#F0EBE0;font-weight:600;margin-top:8px;padding-top:10px;border-top:1px solid #DDD"><span>Acompte demandé ('+acomptePct+'%)</span><span>'+acompte.toFixed(2)+' €</span></div>';
   html+='</div>';
   // Paiement
   html+='<div class="f-pay"><div class="f-ml" style="margin-bottom:8px">Modalités &amp; conditions</div>';
@@ -1029,20 +1042,20 @@ function dlRecipe(id){
   var body='<div style="background:#0A0A0A;padding:22px 40px 18px;display:flex;align-items:center;justify-content:space-between">'
     +'<div><div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:600;letter-spacing:6px;color:#CCC">FOOD-X</div>'
     +'<div style="font-size:7px;letter-spacing:3px;color:#444;text-transform:uppercase;margin-top:2px">Private Chef by XIB</div></div>'
-    +'<div style="text-align:right"><div style="font-size:8px;letter-spacing:3px;color:#C9A84C;text-transform:uppercase;margin-bottom:5px">'+(cats[r.cat]||r.cat)+'</div>'
+    +'<div style="text-align:right"><div style="font-size:8px;letter-spacing:3px;color:#F0EBE0;text-transform:uppercase;margin-bottom:5px">'+(cats[r.cat]||r.cat)+'</div>'
     +'<div style="width:24px;height:2px;background:linear-gradient(90deg,#003F8A 33%,#888 33% 66%,#C1121F 66%);margin-left:auto"></div></div></div>'
     +'<div style="background:#0A0A0A;padding:0 40px 28px">'
-    +'<div style="height:1px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,.05));margin-bottom:18px"></div>'
+    +'<div style="height:1px;background:linear-gradient(90deg,#F0EBE0,rgba(201,168,76,.05));margin-bottom:18px"></div>'
     +'<div style="font-family:Cormorant Garamond,serif;font-size:44px;font-weight:300;letter-spacing:1px;line-height:1;color:#D5D0C8;margin-bottom:16px">'+r.name+'</div>'
     +'<div style="display:flex">'
-    +'<div style="padding:4px 12px;border:1px solid #2A2A2A;margin-right:-1px;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#555">Pour <strong style="color:#C9A84C">'+conv+' convive'+(conv>1?'s':'')+'</strong></div>'
-    +'<div style="padding:4px 12px;border:1px solid #2A2A2A;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#555"><strong style="color:#C9A84C">'+r.ingredients.length+'</strong> ingrédient'+(r.ingredients.length>1?'s':'')+'</div>'
+    +'<div style="padding:4px 12px;border:1px solid #2A2A2A;margin-right:-1px;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#555">Pour <strong style="color:#F0EBE0">'+conv+' convive'+(conv>1?'s':'')+'</strong></div>'
+    +'<div style="padding:4px 12px;border:1px solid #2A2A2A;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#555"><strong style="color:#F0EBE0">'+r.ingredients.length+'</strong> ingrédient'+(r.ingredients.length>1?'s':'')+'</div>'
     +'<div style="padding:4px 12px;border:1px solid #2A2A2A;margin-left:-1px;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#555">'+today+'</div>'
     +'</div></div>'
     +'<div style="background:#F8F6F1;padding:30px 40px 40px;display:grid;grid-template-columns:185px 1fr;gap:40px;align-items:start">'
-    +'<div><div style="font-size:7px;letter-spacing:4px;text-transform:uppercase;color:#C9A84C;font-weight:500;margin-bottom:14px;border-bottom:1px solid #D4B870;padding-bottom:6px">Ingrédients</div>'
+    +'<div><div style="font-size:7px;letter-spacing:4px;text-transform:uppercase;color:#F0EBE0;font-weight:500;margin-bottom:14px;border-bottom:1px solid #D4B870;padding-bottom:6px">Ingrédients</div>'
     +'<table style="width:100%;border-collapse:collapse">'+ingHtml+'</table></div>'
-    +'<div><div style="font-size:7px;letter-spacing:4px;text-transform:uppercase;color:#C9A84C;font-weight:500;margin-bottom:14px;border-bottom:1px solid #D4B870;padding-bottom:6px">Préparation</div>'
+    +'<div><div style="font-size:7px;letter-spacing:4px;text-transform:uppercase;color:#F0EBE0;font-weight:500;margin-bottom:14px;border-bottom:1px solid #D4B870;padding-bottom:6px">Préparation</div>'
     +prepHtml+'</div></div>'
     +'<div style="background:#F0EDE6;padding:11px 40px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #DDD9CF">'
     +'<div style="font-family:Cormorant Garamond,serif;font-size:13px;font-weight:600;letter-spacing:5px;color:#999">FOOD-X</div>'
@@ -1057,6 +1070,96 @@ function dlRecipe(id){
     'html2pdf().set({margin:0,filename:"Recette_',safe,'.pdf",',
     'image:{type:"jpeg",quality:0.99},',
     'html2canvas:{scale:2,useCORS:true,backgroundColor:"#F8F6F1",logging:false},',
+    'jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}',
+    '}).from(document.getElementById("w")).save().then(function(){setTimeout(function(){window.close()},800)})});</sc','ript></body></html>'];
+  var html=parts.join('');
+  var blob=new Blob([html],{type:'text/html'});
+  var url=URL.createObjectURL(blob);
+  var win=window.open(url,'_blank');
+  if(!win)alert('Autorisez les popups pour télécharger.');
+  setTimeout(function(){URL.revokeObjectURL(url)},15000);
+}
+
+// ── CARTE ─────────────────────────────────────────────────────────────────────
+function renderCarte(){
+  var z=document.getElementById('carte-preview');
+  if(!z)return;
+  var cats=[{key:'entrees',lbl:'Entrées'},{key:'plats',lbl:'Plats'},{key:'desserts',lbl:'Desserts'}];
+  var hasAny=false;
+  cats.forEach(function(c){if(state.recipes.filter(function(r){return r.cat===c.key}).length)hasAny=true});
+  if(!hasAny){z.innerHTML=emptyHTML('🍽','Ajoutez des recettes pour générer votre carte');return}
+  z.innerHTML=buildCarteHTML();
+}
+
+function buildCarteHTML(){
+  var cats=[{key:'entrees',lbl:'Entrées'},{key:'plats',lbl:'Plats'},{key:'desserts',lbl:'Desserts'}];
+  var html='<div style="background:#0A0A0A;color:#E8E4DC;font-family:Montserrat,sans-serif;border-radius:2px;overflow:hidden">';
+  // Header
+  html+='<div style="text-align:center;padding:44px 40px 32px">';
+  html+='<div style="font-family:Cormorant Garamond,serif;font-size:42px;font-weight:300;letter-spacing:12px;background:linear-gradient(180deg,#E0E0E0,#888 50%,#D8D8D8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px">FOOD-X</div>';
+  html+='<div style="display:flex;align-items:center;gap:12px;margin:10px auto;width:280px">';
+  html+='<div style="flex:1;height:1px;background:#2A2A2A"></div>';
+  html+='<div style="width:32px;height:2px;background:linear-gradient(90deg,#003F8A 33%,white 33% 66%,#C1121F 66%)"></div>';
+  html+='<div style="flex:1;height:1px;background:#2A2A2A"></div></div>';
+  html+='<div style="font-size:8px;letter-spacing:5px;color:#555;text-transform:uppercase;margin-bottom:6px">Private Chef by XIB</div>';
+  html+='<div style="font-family:Cormorant Garamond,serif;font-style:italic;font-size:18px;font-weight:300;color:#888;letter-spacing:1px">More than food.</div>';
+  html+='</div>';
+  // Divider
+  html+='<div style="height:1px;background:linear-gradient(90deg,transparent,#2A2A2A,transparent);margin:0 40px"></div>';
+  // Categories
+  cats.forEach(function(c){
+    var items=state.recipes.filter(function(r){return r.cat===c.key});
+    if(!items.length)return;
+    html+='<div style="padding:32px 40px">';
+    // Category title
+    html+='<div style="text-align:center;margin-bottom:24px">';
+    html+='<div style="font-size:8px;letter-spacing:5px;text-transform:uppercase;color:#F0EBE0;font-weight:400;margin-bottom:8px">— '+c.lbl+' —</div>';
+    html+='<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(240,235,224,0.2),transparent)"></div>';
+    html+='</div>';
+    // Dishes
+    items.forEach(function(r){
+      var conv=r.baseConvives;
+      html+='<div style="margin-bottom:22px;text-align:center">';
+      html+='<div style="font-family:Cormorant Garamond,serif;font-size:22px;font-weight:300;letter-spacing:1px;color:#E8E4DC;margin-bottom:4px">'+r.name+'</div>';
+      if(r.description){
+        var shortDesc=r.description.split('\n')[0];
+        if(shortDesc.length>120)shortDesc=shortDesc.substring(0,120)+'…';
+        html+='<div style="font-family:Cormorant Garamond,serif;font-size:13px;font-style:italic;font-weight:300;color:#555;line-height:1.6;max-width:460px;margin:0 auto">'+shortDesc+'</div>';
+      }
+      html+='<div style="font-size:9px;letter-spacing:2px;color:#444;text-transform:uppercase;margin-top:6px">'+conv+' convive'+(conv>1?'s':'')+'</div>';
+      html+='</div>';
+      html+='<div style="height:1px;background:linear-gradient(90deg,transparent,#1C1C1C,transparent);margin:0 80px 22px"></div>';
+    });
+    html+='</div>';
+    html+='<div style="height:1px;background:linear-gradient(90deg,transparent,#2A2A2A,transparent);margin:0 40px"></div>';
+  });
+  // Footer
+  html+='<div style="text-align:center;padding:28px 40px">';
+  html+='<div style="font-family:Cormorant Garamond,serif;font-style:italic;font-size:15px;font-weight:300;color:#444;letter-spacing:1px">Tous nos plats sont préparés avec des produits frais et de saison.</div>';
+  html+='<div style="font-size:8px;letter-spacing:3px;color:#333;text-transform:uppercase;margin-top:10px">Food-X — Private Chef by XIB</div>';
+  html+='</div>';
+  html+='</div>';
+  return html;
+}
+
+function dlCarte(){
+  if(!state.recipes.length){alert('Ajoutez des recettes pour générer la carte.');return}
+  var cats=[{key:'entrees',lbl:'Entrées'},{key:'plats',lbl:'Plats'},{key:'desserts',lbl:'Desserts'}];
+  var hasAny=false;
+  cats.forEach(function(c){if(state.recipes.filter(function(r){return r.cat===c.key}).length)hasAny=true});
+  if(!hasAny){alert('Ajoutez des recettes pour générer la carte.');return}
+  var body=buildCarteHTML();
+  var parts=['<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Carte FOOD-X</title>',
+    '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">',
+    '<sc','ript src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></sc','ript>',
+    '<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}',
+    'html,body{margin:0;padding:0;background:#0A0A0A;-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+    '#w{background:#0A0A0A;width:210mm;margin:0}</style>',
+    '</head><body><div id="w">',body,'</div>',
+    '<sc','ript>document.fonts.ready.then(function(){',
+    'html2pdf().set({margin:0,filename:"Carte_FOODX.pdf",',
+    'image:{type:"jpeg",quality:0.99},',
+    'html2canvas:{scale:2,useCORS:true,backgroundColor:"#0A0A0A",logging:false},',
     'jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}',
     '}).from(document.getElementById("w")).save().then(function(){setTimeout(function(){window.close()},800)})});</sc','ript></body></html>'];
   var html=parts.join('');
