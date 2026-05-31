@@ -29,6 +29,7 @@ html,body{height:100%;background:var(--black);color:var(--text);font-family:'Mon
 .main{flex:1;overflow:hidden;display:flex;flex-direction:column}
 .page{display:none;flex:1;overflow:hidden;flex-direction:column}
 .page.on{display:flex}
+#pg-carte{overflow-y:auto}
 /* HOME */
 .home{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#111111,var(--black) 65%)}
 .h-title{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;letter-spacing:14px;background:linear-gradient(180deg,#E0E0E0,#888 40%,#C0C0C0 70%,#666);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:10px}
@@ -358,13 +359,14 @@ select option{background:#1A1A1A;color:var(--text)}
           <div class="pg-title">Carte <span>des plats</span></div>
           <button class="btn btn-g" onclick="dlCarte()">↓ Télécharger la carte PDF</button>
         </div>
-        <div id="carte-preview" style="max-width:680px"></div>
+        <div id="carte-preview" style="max-width:680px;overflow-y:auto"></div>
       </div>
-    </div>
     </div>
 
   </div>
 </div>
+
+</div><!-- /.app -->
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
@@ -1173,6 +1175,7 @@ function dlCarte(){
 // ── INIT ──────────────────────────────────────────────────────────────────────
 updateStats();
 loadCloud();
+setTimeout(function(){renderCarte();},500);
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});
 </script>
 
